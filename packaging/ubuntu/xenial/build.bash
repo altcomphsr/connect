@@ -17,6 +17,7 @@ debuild --no-tgz-check
 cd /build/openhsr-connect/
 
 # Set current version...
+sed -i -e 's/version[\t ]*=[\t ]*"[0-9]*\.[0-9]*\.[0-9]*"/version="'${CONNECT_VERSION}'"/gi' setup.py
 sed -i 's/CONNECT_VERSION/'$CONNECT_VERSION'/g' packaging/${DISTRIBUTION}/${VERSION}/debian/changelog
 
 cp -R packaging/${DISTRIBUTION}/${VERSION}/debian/ debian/
@@ -30,4 +31,3 @@ cat /build/openhsr-connect/packaging/${DISTRIBUTION}/*/distributions > /repo/con
 reprepro -Vb /repo/ export
 reprepro -Vb /repo/ includedeb ${VERSION} /build/openhsr-connect_${CONNECT_VERSION}_all.deb
 reprepro -Vb /repo/ includedeb ${VERSION} /build/python3-pysmb_${PYSMB_VERSION}_all.deb
-/bin/bash

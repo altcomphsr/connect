@@ -2,8 +2,7 @@
 
 # Abort if a command fails!
 set -e
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+echo "Starting deployment configuration..."
 
 if [ ! -n "$HOST" ];then
     echo "missing option \"HOST\", aborting"
@@ -18,24 +17,18 @@ if [ ! -n "$PASSWORD" ];then
     exit 1
 fi
 
-if [ ! -n "$DIRECTORY" ];then
-    echo  "missing option \"DIRECTORY\", aborting"
+if [ ! -n "$DIR_REMOTE" ];then
+    echo  "missing option \"DIR_REMOTE\", aborting"
     exit 1
 fi
-
-# Go into the directory, where the site was generated
-cd "$DIR/_site/"
-
 
 echo "Uploading..."
 lftp -e "
 open $HOST
-set ssl:verify-certificate no
-set ssl:check-hostname off
 set cmd:fail-exit true
 user $USER $PASSWORD
-cd $DIRECTORY
-mirror --reverse --delete --ignore-time --verbose --parallel . .
+cd $DIR_REMOTE
+mirror --reverse --delete --ignore-time --transfer-all --overwrite --verbose --parallel . .
 bye
 "
 

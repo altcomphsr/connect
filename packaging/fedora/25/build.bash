@@ -7,11 +7,13 @@ SPECDIR="/src/packaging/fedora/${FEDORA_VERSION}/"
 # Build connect
 ###############################################################################
 pushd /src > /dev/null
+  sed -i -e 's/version[\t ]*=[\t ]*"[0-9]*\.[0-9]*\.[0-9]*"/version="'${CONNECT_VERSION}'"/gi' setup.py
   python3 ./setup.py sdist --dist-dir=$SPECDIR
 popd > /dev/null
 
 pushd $SPECDIR >/dev/null
-  rpmdev-bumpspec -u openhsr -n "$VERSION" openhsr-connect.spec
+  rpmdev-bumpspec -u openhsr -n "$CONNECT_VERSION" openhsr-connect.spec
+
   fedpkg --release f${FEDORA_VERSION} local
 popd > /dev/null
 
@@ -27,13 +29,20 @@ pushd ${SPECDIR}pysmb/ > /dev/null
   fedpkg --release f${FEDORA_VERSION} local
 popd > /dev/null
 
+JSONSCHEMA_VERSION=2.6.0
+pushd ${SPECDIR}jsonschema > /dev/null
+  curl -o jsonschema-${JSONSCHEMA_VERSION}.tar.gz https://pypi.python.org/packages/58/b9/171dbb07e18c6346090a37f03c7e74410a1a56123f847efed59af260a298/jsonschema-${JSONSCHEMA_VERSION}.tar.gz
+  rpmdev-bumpspec -u openhsr -n "$JSONSCHEMA_VERSION" jsonschema.spec
+  fedpkg --release f${FEDORA_VERSION} local
+popd > /dev/null
+
 ###############################################################################
 # Package signing
 ###############################################################################
 cat <<'__EOF__' > /build/.rpmmacros
 %_signature gpg
 %_gpg_path /build/.gnupg
-%_gpg_name 0x04969FB29CABC357
+%_gpg_name 0x5AE4B07A1957D46D
 __EOF__
 
 gpg --import <(echo -e "${GPG_KEY}")

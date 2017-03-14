@@ -2,13 +2,16 @@ sudo: required
 language: generic
 services:
   - docker
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y lftp
 
 script:
   - make all
 
 deploy:
   provider: script
-  script: ./deploy.sh
+  script: make upload
   skip_cleanup: true
   on:
     branch: master
