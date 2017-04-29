@@ -5,7 +5,7 @@ sudo dnf config-manager --add-repo https://raw.githubusercontent.com/openhsr/con
 sudo dnf install openhsr-connect
 ```
 
-## Ubuntu
+## Ubuntu/Debian
 
 ```bash
 curl https://pool.openhsr.ch/pool@openhsr.ch.gpg.key | sudo apt-key add -
