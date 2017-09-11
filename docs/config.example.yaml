@@ -6,12 +6,13 @@ sync:
   global-exclude:
     - .DS_Store
     - Thumbs.db
+    - desktop.ini
 
   conflict-handling:
     local-changes: ask
     remote-deleted: ask
     
-  default-local-dir: /path/to/your/files/<name>/  
+  default-local-dir: /path/to/your/files/<name>/ #E.g. /home/user/hsr/<name>/
 
   repositories:
     InfSi1:
@@ -19,3 +20,6 @@ sync:
       exclude:
         - '*.exe'
         - 'Archiv'
+    OO:
+      remote-dir: Informatik\Fachbereich\Objektorientierte_Programmierung\OO
+    

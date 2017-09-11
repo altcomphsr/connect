@@ -5,6 +5,7 @@ import getpass
 import keyring
 from openhsr_connect.exceptions import PasswordException, ConfigurationException
 import jsonschema
+import errno
 
 logger = logging.getLogger('openhsr_connect.config')
 PATH_CONFIG = '~/.config/openhsr-connect.yaml'
@@ -19,6 +20,7 @@ sync:
   global-exclude:
     - .DS_Store
     - Thumbs.db
+    - desktop.ini
 
   conflict-handling:
     local-changes: ask # ask | keep | overwrite | makeCopy
@@ -103,9 +105,26 @@ def create_default_config(config_path):
     username = input('Dein HSR-Benutzername: ')
     mail = input('Deine HSR-Email (VORNAME.NACHNAME@hsr.ch): ')
     config = DEFAULT_CONFIG.format(username=username, mail=mail)
-    with open(config_path, 'w') as f:
+    
+
+    with safe_open_w(config_path) as f:
         f.write(config)
 
+
+def safe_open_w(path):
+	"""
+	Open file path and create parent directories if necessary as open() doesn't create them on Windows
+	"""
+    try:
+        os.makedirs(os.path.dirname(path))
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(os.path.dirname(path)):
+            pass
+        else: 
+		    raise
+
+    return open(path, 'w')
+	
 
 def load_config(raise_if_incomplete=False):
     """
@@ -117,6 +136,7 @@ def load_config(raise_if_incomplete=False):
     if not os.path.exists(config_path):
         if raise_if_incomplete:
             raise ConfigurationException('Configuration does not yet exist!')
+
         create_default_config(config_path)
 
     config = None
